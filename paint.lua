@@ -23,14 +23,11 @@ end
 function paint_node(pos, node, col, itemstack)
 	local s, e
 	local nname = node.name
-	minetest.log("error", "checking node "..nname)
 	s, e = string.find(nname, "_[^_]+$")
 	if s and e then
 		local color = string.sub(nname, s + 1, e)
-		minetest.log("error", "found color "..color)
 		if mypaint.colors[color] then
 			nname = string.sub(nname, 1, s - 1)
-			minetest.log("error", "color ok, base name is "..nname)
 			if color == col then
 				return
 			end
