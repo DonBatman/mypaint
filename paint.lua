@@ -8,6 +8,10 @@ function check_paintcan(pos, node)
 	end
 	local color = string.sub(name, 15)
 	local meta = minetest.get_meta(pos)
+	stack = ItemStack("mypaint:brush_"..color)
+	if minetest.setting_getbool("creative_mode") then
+		return stack
+	end
 	local uses = meta:get_int("mypaint:uses") - 1
 	meta:set_int("mypaint:uses", uses)
 	if uses <= 0 then
@@ -17,7 +21,7 @@ function check_paintcan(pos, node)
 		info = string.gsub(info, "%(.*%)", "("..uses.." uses)")
 		meta:set_string("infotext", info)
 	end
-	return ItemStack("mypaint:brush_"..color)
+	return stack
 end
 
 function paint_node(pos, node, col, itemstack)
@@ -132,13 +136,15 @@ for color, entry in pairs(mypaint.colors) do
 
 	minetest.register_tool("mypaint:paintcan_"..color, {
 		description = desc.." Paint",
-		inventory_image = "mypaint_inv_can_base.png^(mypaint_inv_can_color.png^[colorize:#"..cstring.."^[mask:mypaint_inv_can_color.png)",
+		inventory_image = "mypaint_inv_can_base.png^(mypaint_inv_can_color.png^[colorize:#"..cstring..":alpha)",
 		on_place = function(itemstack, user, pointed_thing)
 			local pname = "mypaint:paint_"..color
 			local paint = ItemStack(pname)
 			paint = minetest.item_place_node(paint, user, pointed_thing)
-			if not paint or (paint:get_count() > 0) then
-				return
+			if not minetest.setting_getbool("creative_mode") then
+				if not paint or (paint:get_count() > 0) then
+					return
+				end
 			end
 			local pos = pointed_thing.under
 			local node = minetest.get_node(pos)
