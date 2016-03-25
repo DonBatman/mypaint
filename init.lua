@@ -15,6 +15,7 @@ mypaint.colors = {
 	pink = 			{"Pink",			"FE2E9A"},
 	violet = 		{"Violet",			"7f007f"},
 	yellow = 		{"Yellow",			"ffff00"},
+	clear = 		{"Clear",			"000000:0"},
 }
 mypaint.paintables = {}
 
