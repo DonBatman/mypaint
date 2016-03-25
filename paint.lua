@@ -28,8 +28,9 @@ function paint_node(pos, node, col, itemstack)
 	local s, e
 	local nname = node.name
 	s, e = string.find(nname, "_[^_]+$")
+	local color
 	if s and e then
-		local color = string.sub(nname, s + 1, e)
+		color = string.sub(nname, s + 1, e)
 		if mypaint.colors[color] then
 			nname = string.sub(nname, 1, s - 1)
 			if color == col then
@@ -40,18 +41,25 @@ function paint_node(pos, node, col, itemstack)
 
 	for name, colors in pairs(mypaint.paintables) do
 		if (nname == name) then
-			if colors[col] then
-				minetest.set_node(pos,{name = name.."_"..col, param2 = node.param2})
-				if not minetest.setting_getbool("creative_mode") then
-					local wear = itemstack:get_wear() + 65535 / BRUSH_USES
-					if wear < 65535 then
-						itemstack:set_wear(wear)
-					else
-						itemstack = ItemStack("mypaint:brush")
-					end
+			if not col then
+				if color then
+					minetest.set_node(pos, {name = name, param2 = node.param2})
 				end
+				return
 			end
-			return itemstack
+			if not colors[col] then
+				return
+			end
+			minetest.set_node(pos, {name = name.."_"..col, param2 = node.param2})
+			if not minetest.setting_getbool("creative_mode") then
+				local wear = itemstack:get_wear() + 65535 / BRUSH_USES
+				if wear < 65535 then
+					itemstack:set_wear(wear)
+				else
+					itemstack = ItemStack("mypaint:brush")
+				end
+				return itemstack
+			end
 		end
 	end
 end
@@ -69,6 +77,19 @@ minetest.register_tool("mypaint:brush", {
 			return
 		end
 		return check_paintcan(pos, node)
+	end
+})
+
+minetest.register_tool("mypaint:scraper", {
+	description = "Paint Scraper",
+	inventory_image = "mypaint_scraper.png",
+	on_use = function(itemstack, user, pointed_thing)
+		if pointed_thing.type ~= "node" then
+			return
+		end
+		local pos = pointed_thing.under
+		local node = minetest.get_node(pos)
+		return paint_node(pos, node, nil, itemstack)
 	end
 })
 
@@ -179,6 +200,14 @@ minetest.register_craft({
 		recipe = {
 			{'wool:white'},
 			{'group:stick'},
+		}
+})
+
+minetest.register_craft({
+		output = 'mypaint:scraper',
+		recipe = {
+			{'default:steel_ingot', ''},
+			{'', 'group:stick'},
 		}
 })
 
