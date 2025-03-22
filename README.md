@@ -2,4 +2,5 @@
 
 Use paint cans and brushes to paint items.
 
-Licence - DWYWPL
+Code Licence - MIT
+Media Licence - CC0
