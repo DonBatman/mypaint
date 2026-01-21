@@ -64,4 +64,4 @@ mypaint.register = function(names, colors)
 	end
 end
 
-dofile(minetest.get_modpath("mypaint").."/paint.lua")
+dofile(core.get_modpath("mypaint").."/paint.lua")
